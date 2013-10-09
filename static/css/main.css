@@ -1,0 +1,28 @@
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #fb5b1f;
+    color: #black;;
+    font-family: 'Helvetica', sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#search-box {
+    background-color: white;
+    margin: 0 auto;
+    margin-top: 50px;
+    padding: 5px;
+    width: 400px;
+}
+
+#search-box p {
+    text-align: center;
+}
+
+#map-canvas {
+    height: 100%;
+}
