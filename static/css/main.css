@@ -1,47 +1,34 @@
-/* Sassify (add webassets + css compiler to Flask) */
-
-
 html {
-    height: 100%;
-}
+  height: 100%; }
 
-body {
+  body {
     background-color: #fb5b1f;
-    color: #black;;
+    color: #black;
     font-family: 'Helvetica', sans-serif;
     height: 100%;
     margin: 0;
-    padding: 0;
-}
+    padding: 0; }
 
-.header {
-    font-size: 48px;
-}
+    .header {
+      font-size: 48px; }
 
-/* make this a drawer that pulls out on hover */
-#nav-box {
-    background-color: rgba(228, 210, 187, 0.7);
-    border: 5px solid #e4d2bb;
-    border-radius: 20px;
-    margin: 0 auto;
-    margin-top: 50px;
-    padding: 5px;
-    position: absolute;
-    right: 0px;
-    top: 120px;
-    width: 300px;
-}
+      #nav-box {
+        background-color: rgba(228, 210, 187, 0.7);
+        border: 5px solid #e4d2bb;
+        border-radius: 20px;
+        margin: 0 auto;
+        margin-top: 50px;
+        padding: 5px;
+        position: absolute;
+        right: 0px;
+        top: 120px;
+        width: 300px; }
+        #nav-box p {
+          text-align: center; }
 
-#nav-box p {
-    text-align: center;
-}
-
-/* make bigger! */
 #search-box {
-    display: block;
-    margin: 0 auto;
-}
+  display: block;
+  margin: 0 auto; }
 
-#map-canvas {
-    height: 100%;
-}
+  #map-canvas {
+    height: 100%; }

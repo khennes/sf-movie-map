@@ -3,3 +3,6 @@ ENV
 *.swp
 *.pyc
 data.json
+model.py
+seed.py
+static/.*

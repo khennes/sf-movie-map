@@ -3,13 +3,39 @@ html {
 }
 
 body {
+    background-color: #fb5b1f;
+    color: #black;;
+    font-family: 'Helvetica', sans-serif;
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
-#nav {
-    background: blue;
+.header {
+    font-size: 48px;
+}
+
+/* make this a drawer that pulls out on hover */
+#nav-box {
+    background-color: rgba(228, 210, 187, 0.7);
+    border: 5px solid #e4d2bb;
+    border-radius: 20px;
+    margin: 0 auto;
+    margin-top: 50px;
+    padding: 5px;
+    position: absolute;
+    right: 0px;
+    top: 120px;
+    width: 300px;
+    p {
+        text-align: center;
+    }
+}
+
+/* make bigger! */
+#search-box {
+    display: block;
+    margin: 0 auto;
 }
 
 #map-canvas {
