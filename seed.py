@@ -1,10 +1,9 @@
 import model
-# json object
 
 
-def load_movies(file, session):
+def load_movies(filename, session):
     movies = {}
-    for item in file:
+    for item in filename:
         title = item["title"]
         if movies[title] == None:
             movies[title] = item["location"]
@@ -15,9 +14,9 @@ def load_movies(file, session):
     session.commit()
 
 
-def load_locations(file, session):
+def load_locations(filename, session):
     locations = {}
-    for item in file:
+    for item in filename:
         site = item["location"]
         if locations[site] == None:
             locations[site] = item["title"]

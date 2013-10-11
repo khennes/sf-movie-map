@@ -1,6 +1,10 @@
 from flask import Flask, render_template
+# from flask.ext.assets import Environment, Bundle
 
 app = Flask(__name__)
+# assets = Environment(app)
+
+# js = Bundle('jquery-2.0.3-min.js', 'main.js', 'backbone-min.js'
 
 @app.route('/')
 def index():

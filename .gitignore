@@ -1,0 +1,5 @@
+plan.txt
+ENV
+*.swp
+*.pyc
+data.json
