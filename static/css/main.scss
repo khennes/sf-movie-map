@@ -3,7 +3,6 @@ html {
 }
 
 body {
-    background-color: #fb5b1f;
     color: #black;;
     font-family: 'Helvetica', sans-serif;
     height: 100%;
@@ -13,6 +12,12 @@ body {
 
 .header {
     font-size: 48px;
+}
+
+.content {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 24px;
+    width: 150px;
 }
 
 /* make this a drawer that pulls out on hover */
@@ -26,6 +31,7 @@ body {
     position: absolute;
     right: 0px;
     top: 120px;
+    height: 450px;
     width: 300px;
     p {
         text-align: center;

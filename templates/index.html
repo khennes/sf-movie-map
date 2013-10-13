@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>Cinematic SF</title>
-  <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Reenie+Beanie' />
   {% assets "scss_main" %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
   {% endassets %}
@@ -12,14 +11,14 @@
   <div id="map-canvas">
   </div>
   <div id="nav-box">
-    <p class="header">Cinematic San Francisco</p>
+    <p class="header">sf movie map</p>
     <p>What are you looking for?</p> 
     <input id="search-box" type="search" placeholder="Search by title" />
   </div>
   <script src="{{ url_for('static', filename='js/jquery-2.0.3.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/underscore-min.js') }}"></script>
-  <!-- <script src="{{ url_for('static', filename='backbone-min.js') }}"></script> -->
-  <script src="/static/js/main.js"></script>
+  <script src="{{ url_for('static', filename='js/backbone-min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
 </html>

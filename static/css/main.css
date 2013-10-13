@@ -2,7 +2,6 @@ html {
   height: 100%; }
 
   body {
-    background-color: #fb5b1f;
     color: #black;
     font-family: 'Helvetica', sans-serif;
     height: 100%;
@@ -12,19 +11,25 @@ html {
     .header {
       font-size: 48px; }
 
-      #nav-box {
-        background-color: rgba(228, 210, 187, 0.7);
-        border: 5px solid #e4d2bb;
-        border-radius: 20px;
-        margin: 0 auto;
-        margin-top: 50px;
-        padding: 5px;
-        position: absolute;
-        right: 0px;
-        top: 120px;
-        width: 300px; }
-        #nav-box p {
-          text-align: center; }
+      .content {
+        font-family: 'Helvetica', sans-serif;
+        font-size: 24px;
+        width: 150px; }
+
+        #nav-box {
+          background-color: rgba(228, 210, 187, 0.7);
+          border: 5px solid #e4d2bb;
+          border-radius: 20px;
+          margin: 0 auto;
+          margin-top: 50px;
+          padding: 5px;
+          position: absolute;
+          right: 0px;
+          top: 120px;
+          height: 450px;
+          width: 300px; }
+          #nav-box p {
+            text-align: center; }
 
 #search-box {
   display: block;
