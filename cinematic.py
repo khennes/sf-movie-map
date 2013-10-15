@@ -9,7 +9,8 @@ assets.url = app.static_url_path
 scss = Bundle('css/main.scss', filters='pyscss', output='css/main.css')
 assets.register('scss_main', scss)
 
-# js = Bundle('jquery-2.0.3-min.js', 'main.js', 'backbone-min.js'
+# js = Bundle('vendor/jquery-2.0.3-min.js', 'js/main.js', 'vendor/backbone-min.js', 'vendor/underscore-min.js')
+# assets.register('js_main', js)
 
 @app.route('/', methods=['GET'])
 def index():
