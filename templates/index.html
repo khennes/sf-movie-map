@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Cinematic SF</title>
+  <title>SF Movie Map</title>
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Josefin+Sans:600|Alegreya:400italic,400,700|EB+Garamond'>
   {% assets "scss_main" %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
   {% endassets %}
@@ -11,13 +12,19 @@
   <div id="map-canvas">
   </div>
   <div id="nav-box">
-    <p class="header">sf movie map</p>
-    <p>What are you looking for?</p> 
-    <input id="search-box" type="search" placeholder="Search by title" />
+    <h2 class="header">sf movie map</h2>
+    <div>What are you looking for?</div> 
+    <input class="filter" id="by-title" type="text" placeholder="film title" />
+    <input class="filter" id="by-director" type="text" placeholder="director" />
+    <input class="filter" id="by-year" type="text" placeholder="year" />
+    <input class="filter" id="by-location" type="text" placeholder="address, landmark, or intersection" />
+    <input class="button" id="go" type="button" value="Go" />
+    <input class="button" id="reset" type="button" value="Reset" />
   </div>
-  <script src="{{ url_for('static', filename='js/jquery-2.0.3.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/underscore-min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/backbone-min.js') }}"></script>
+  <!-- to minify -->
+  <script src="{{ url_for('static', filename='vendor/jquery-2.0.3.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/underscore-min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/backbone-min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>

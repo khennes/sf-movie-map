@@ -3,21 +3,9 @@ html {
 }
 
 body {
-    color: #black;;
-    font-family: 'Helvetica', sans-serif;
     height: 100%;
     margin: 0;
     padding: 0;
-}
-
-.header {
-    font-size: 48px;
-}
-
-.content {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 24px;
-    width: 150px;
 }
 
 /* make this a drawer that pulls out on hover */
@@ -25,23 +13,58 @@ body {
     background-color: rgba(228, 210, 187, 0.7);
     border: 5px solid #e4d2bb;
     border-radius: 20px;
+    font-family: 'EB Garamond', serif;
+    font-size: 20px;
     margin: 0 auto;
-    margin-top: 50px;
-    padding: 5px;
+    padding: 0 5px 0 5px;
     position: absolute;
     right: 0px;
     top: 120px;
-    height: 450px;
     width: 300px;
-    p {
-        text-align: center;
+    text-align: center;
+    .header {
+        border-bottom: 3px dotted black;
+        font-family: 'EB Garamond', serif;
+        font-size: 48px;
+        font-weight: bold;
+    }
+    input {
+        border-radius: 8px;
+        font-family: 'Josefin Sans', sans-serif;
+        font-size: 18px;
+        padding: 3px;
+        margin: 5px 0 5px 0;
+
+        &.filter {
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 5px;
+            width: 250px;
+        }
+        &.button {
+            cursor: pointer;
+            display: inline;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            width: 60px;
+            &:first {
+                float: left;
+                padding-right: 3px;
+            }
+        }
     }
 }
 
-/* make bigger! */
-#search-box {
-    display: block;
-    margin: 0 auto;
+.content {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 18px;
+    width: 150px;
+    h1 {
+        font-family: 'Josefin Sans', sans-serif;
+        font-size: 24px;
+        font-weight: bold;
+    }
 }
 
 #map-canvas {

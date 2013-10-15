@@ -2,38 +2,58 @@ html {
   height: 100%; }
 
   body {
-    color: #black;
-    font-family: 'Helvetica', sans-serif;
     height: 100%;
     margin: 0;
     padding: 0; }
 
-    .header {
-      font-size: 48px; }
+    #nav-box {
+      background-color: rgba(228, 210, 187, 0.7);
+      border: 5px solid #e4d2bb;
+      border-radius: 20px;
+      font-family: 'EB Garamond', serif;
+      font-size: 20px;
+      margin: 0 auto;
+      padding: 0 5px 0 5px;
+      position: absolute;
+      right: 0px;
+      top: 120px;
+      width: 300px;
+      text-align: center; }
+      #nav-box .header {
+        border-bottom: 3px dotted black;
+        font-family: 'EB Garamond', serif;
+        font-size: 48px;
+        font-weight: bold; }
+        #nav-box input {
+          border-radius: 8px;
+          font-family: 'Josefin Sans', sans-serif;
+          font-size: 18px;
+          padding: 3px;
+          margin: 5px 0 5px 0; }
+          #nav-box input.filter {
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 5px;
+            width: 250px; }
+            #nav-box input.button {
+              cursor: pointer;
+              display: inline;
+              font-size: 18px;
+              font-weight: bold;
+              margin-top: 20px;
+              width: 60px; }
+              #nav-box input.button:first {
+                float: left;
+                padding-right: 3px; }
 
-      .content {
-        font-family: 'Helvetica', sans-serif;
-        font-size: 24px;
-        width: 150px; }
+.content {
+  font-family: 'Helvetica', sans-serif;
+  font-size: 18px;
+  width: 150px; }
+  .content h1 {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 24px;
+    font-weight: bold; }
 
-        #nav-box {
-          background-color: rgba(228, 210, 187, 0.7);
-          border: 5px solid #e4d2bb;
-          border-radius: 20px;
-          margin: 0 auto;
-          margin-top: 50px;
-          padding: 5px;
-          position: absolute;
-          right: 0px;
-          top: 120px;
-          height: 450px;
-          width: 300px; }
-          #nav-box p {
-            text-align: center; }
-
-#search-box {
-  display: block;
-  margin: 0 auto; }
-
-  #map-canvas {
-    height: 100%; }
+#map-canvas {
+  height: 100%; }
