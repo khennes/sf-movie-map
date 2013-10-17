@@ -20,8 +20,10 @@ def geocode_locations(filename):
             continue
         try:
             results = Geocoder.geocode(scene['locations'], bounds=BOUNDS)
+
+            # check that resulting coordinates are within vicinity of SF
             if not 37.0 < results[0].coordinates[0] < 38.0 or not -123.0 < results[0].coordinates[1] < -122.0:
-                errors.append(scene)
+                errors.append(scene)  # tracking errors for better catching
             else:
                 scene['latlong'] = results[0].coordinates
         except GeocoderError:

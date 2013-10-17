@@ -20,7 +20,7 @@ html {
       width: 300px;
       text-align: center; }
       #nav-box .header {
-        border-bottom: 3px dotted black;
+        border-bottom: 3px dotted gray;
         font-family: 'EB Garamond', serif;
         font-size: 48px;
         font-weight: bold; }
@@ -28,7 +28,7 @@ html {
           border-radius: 8px;
           font-family: 'Josefin Sans', sans-serif;
           font-size: 18px;
-          padding: 3px;
+          border-radius: 8px;
           margin: 5px 0 5px 0; }
           #nav-box input.filter {
             display: block;
@@ -38,7 +38,6 @@ html {
             #nav-box input.button {
               cursor: pointer;
               display: inline;
-              font-size: 18px;
               font-weight: bold;
               margin-top: 20px;
               width: 60px; }
@@ -46,14 +45,42 @@ html {
                 float: left;
                 padding-right: 3px; }
 
-.content {
-  font-family: 'Helvetica', sans-serif;
+.tt-dropdown-menu {
+  border-radius: 8px;
+  font-family: 'Josefin Sans', sans-serif;
   font-size: 18px;
-  width: 150px; }
-  .content h1 {
+  background-color: white;
+  width: 250px; }
+
+  .tt-hint, .tt-query {
+    border-radius: 8px;
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 24px;
-    font-weight: bold; }
+    font-size: 18px;
+    margin: 0 auto;
+    padding: 0;
+    width: 250px; }
+
+    .tt-suggestions {
+      border-radius: 8px;
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 18px;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+      padding: 0;
+      text-align: left;
+      width: 250px; }
+
+      .content {
+        border: 1px dotted black;
+        font-family: 'Helvetica', sans-serif;
+        font-size: 18px;
+        padding: 5px 5px 5px 15px;
+        width: 180px; }
+        .content h1 {
+          font-family: 'Josefin Sans', sans-serif;
+          font-size: 24px;
+          font-weight: bold; }
 
 #map-canvas {
   height: 100%; }

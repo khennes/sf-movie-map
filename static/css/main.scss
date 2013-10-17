@@ -1,3 +1,9 @@
+@mixin searchtext {
+    border-radius: 8px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 18px;
+}
+
 html {
     height: 100%;
 }
@@ -23,16 +29,14 @@ body {
     width: 300px;
     text-align: center;
     .header {
-        border-bottom: 3px dotted black;
+        border-bottom: 3px dotted gray;
         font-family: 'EB Garamond', serif;
         font-size: 48px;
         font-weight: bold;
     }
     input {
+        @include searchtext;
         border-radius: 8px;
-        font-family: 'Josefin Sans', sans-serif;
-        font-size: 18px;
-        padding: 3px;
         margin: 5px 0 5px 0;
 
         &.filter {
@@ -44,7 +48,6 @@ body {
         &.button {
             cursor: pointer;
             display: inline;
-            font-size: 18px;
             font-weight: bold;
             margin-top: 20px;
             width: 60px;
@@ -56,10 +59,35 @@ body {
     }
 }
 
+.tt-dropdown-menu {
+    @include searchtext;
+    background-color: white;
+    width: 250px;
+}
+
+.tt-hint, .tt-query {
+    @include searchtext;
+    margin: 0 auto;
+    padding: 0;
+    width: 250px;
+}
+
+.tt-suggestions {
+    @include searchtext;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+    text-align: left;
+    width: 250px;
+}
+
 .content {
+    border: 1px dotted black;
     font-family: 'Helvetica', sans-serif;
     font-size: 18px;
-    width: 150px;
+    padding: 5px 5px 5px 15px;
+    width: 180px;
     h1 {
         font-family: 'Josefin Sans', sans-serif;
         font-size: 24px;

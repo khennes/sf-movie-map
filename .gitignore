@@ -1,3 +1,4 @@
+geocoded.json
 plan.txt
 ENV
 *.swp
@@ -6,3 +7,4 @@ model.py
 seed.py
 static/.*
 readme.md
+data2.json
