@@ -16,15 +16,7 @@ function initialize() {
      * View: markerView
      **/
 
-    var Marker = Backbone.Model.extend({
-        defaults: {
-            title: null, 
-            id: null, 
-            year: null, 
-            director: null, 
-            position: null 
-        }
-    });
+    var Marker = Backbone.Model.extend({});
     var Markers = Backbone.Collection.extend({
         model: Marker
     });     
@@ -33,46 +25,45 @@ function initialize() {
     var allFilters = new Markers();
 
     var markersList = {};  // object to store Google Maps marker objects
+    var infoWindows = {};
 
     var MarkerView = Backbone.View.extend({
-        initialize: function() {
-            _.bindAll(this, 'showFilter', 'showAll', 'render');
-            this.showAll();
-        },
+        el: $('body'),
         events: {
             'click #go': 'showFilter',
             'click #reset': 'showAll'
         },
+        initialize: function() {
+            _.bindAll(this, 'showFilter', 'showAll', 'render');
+            this.showAll();
+        },
         showFilter: function() {
-            console.log("click!");
             var filter_options = {};
 
             var title_query = $('#by-title').val();
             var director_query = $('#by-director').val();
             var year_query = $('#by-year').val();
-            // var location_query = $('#by-location').val();
-
-            if (title_query != null) {
-                filter_options[title] = title_query;
-            }
-
-            if (director_query != null) {
-                filter_options[director] = director_query;
-            }
-        
-            if (year_query != null) {
-                filter_options[year] = year_query;
-            }
-
             // TODO: location queries to be handled differently
 
-            var match_filters = this.collection.where(filter_options);
 
-            //  console.log(match_filters);
+            if (title_query != '') {
+                filter_options['title'] = title_query;
+            }
+
+            if (director_query != '') {
+                filter_options['director'] = director_query;
+            }
+        
+            if (year_query != '') {
+                filter_options['year'] = year_query;
+            }
+
+            var match_filters = this.collection.where(filter_options);
+            console.log(match_filters);
 
             if (match_filters.length > 0) {
                 allFilters.add(match_filters);
-                this.render(allFilters);
+                this.render(allFilters.models);
             } else {
                 $('#user-message').text('No results found');
                 this.render(this.collection.models);
@@ -82,9 +73,14 @@ function initialize() {
             this.render(this.collection.models);
         },
         render: function(models) {
+            for (var key in markersList) {
+                markersList[key].setVisible(false);  // clear map
+            }
             _.each(models, function(el) {
                 markersList[el.attributes.id].setVisible(true);
             });
+
+            return this;
         }
     });
 
@@ -98,29 +94,6 @@ function initialize() {
             var scene = data[i];
             if (scene['latlong']) {  // (TODO: only jsonify valid locations before passing to client)
 
-                // create info window, specify content
-                var contentString = "<div class='content'>" +
-                    "<div id='siteNotice'>" +
-                    "</div>" +
-                    "<h1 id='firstHeading' class='firstHeading'>" + 
-                    scene['title'] + " (" + scene['release_year'] + ")</h1>" +
-                    "<div id='bodyContent'>" +
-                    "<p>Director: " + scene['director'] + "</p>" +
-                    "<p>Location: " + scene['locations'] + "</p>" +
-                    "</div>";
-
-                if (scene['fun_facts']) {
-                    var funFact = "<p>Fun fact: " + scene['fun_facts'] + "</p>";
-                    contentString += funFact;
-                }
-
-                contentString += "</div>";
-                    
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString,
-                    pixelOffset: 2
-                });
-
                 
                 /**
                  * Create a marker for each scene, add Marker model to collection 
@@ -132,6 +105,7 @@ function initialize() {
                     map: map,
                     position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
                     icon: 'static/js/star-3.png',
+                    title: scene['title'],
                     visible: false,
                     zIndex: i
                 });
@@ -149,13 +123,47 @@ function initialize() {
                 markersList[i] = marker;
                 allMarkers.push(newMarker);
 
-                google.maps.event.addListener(marker, 'click', function() {
-                    // TODO: clicks away should close info window
-                    infoWindow.open(map,marker);
+
+                /**
+                 * Create infowindow, bind to marker
+                 **/
+
+                var contentString = "<div class='content'>" +
+                    "<div id='siteNotice'>" +
+                    "</div>" +
+                    "<h1 id='firstHeading' class='firstHeading'>" + 
+                    scene['title'] + " (" + scene['release_year'] + ")</h1>" +
+                    "<div id='bodyContent'>" +
+                    "<p>Director: " + scene['director'] + "</p>" +
+                    "<p>Location: " + scene['locations'] + "</p>" +
+                    "</div>";
+
+                if (scene['fun_facts']) {
+                    var funFact = "<p>Fun fact: " + scene['fun_facts'] + "</p>";
+                    contentString += funFact;
+                }
+
+                contentString += "</div>";
+
+                var infoWindow = new google.maps.InfoWindow({
+                    content: contentString
                 });
+
+                infoWindows[i] = infoWindow;
+
+                // bind infoWindow to its marker
+                google.maps.event.addListener(markersList[i], 'click', function(index) {
+                    return function() {
+                        infoWindows[index].open(map, markersList[index]);
+                        google.maps.event.addListener(map, 'click', function() {
+                            infoWindows[index].close();  // click away to close infowindow
+                        });
+                    }
+                }(i));
             }
         }
 
+        // instantiate Backbone view
         var markerView = new MarkerView({
             collection: allMarkers
         });
@@ -186,10 +194,7 @@ function initialize() {
             local: years 
         });
 
-        // $("#by-location").typeahead({ 
-        //     name: 'locations',
-        //     remote:  
-        // });
+        // TODO: Location filter
 
     });
 }
