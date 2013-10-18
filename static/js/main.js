@@ -1,15 +1,30 @@
 function initialize() {
     'use strict';
 
-    // Create map instance
+    // create map instance
     var map = new google.maps.Map(document.getElementById('map-canvas'), { 
         center: new google.maps.LatLng(37.775057, -122.419281),
         zoom: 13,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
-    // Initialize Backbone MVC variables
-    var Marker = Backbone.Model.extend({});
+
+    /**
+     * Construct & initialize Backbone MVC variables
+     * Model: marker
+     * Collections: allMarkers, allFilters
+     * View: markerView
+     **/
+
+    var Marker = Backbone.Model.extend({
+        defaults: {
+            title: null, 
+            id: null, 
+            year: null, 
+            director: null, 
+            position: null 
+        }
+    });
     var Markers = Backbone.Collection.extend({
         model: Marker
     });     
@@ -17,8 +32,62 @@ function initialize() {
     var allMarkers = new Markers();
     var allFilters = new Markers();
 
-    // object to store Google Maps markers
-    var markersList = {};
+    var markersList = {};  // object to store Google Maps marker objects
+
+    var MarkerView = Backbone.View.extend({
+        initialize: function() {
+            _.bindAll(this, 'showFilter', 'showAll', 'render');
+            this.showAll();
+        },
+        events: {
+            'click #go': 'showFilter',
+            'click #reset': 'showAll'
+        },
+        showFilter: function() {
+            console.log("click!");
+            var filter_options = {};
+
+            var title_query = $('#by-title').val();
+            var director_query = $('#by-director').val();
+            var year_query = $('#by-year').val();
+            // var location_query = $('#by-location').val();
+
+            if (title_query != null) {
+                filter_options[title] = title_query;
+            }
+
+            if (director_query != null) {
+                filter_options[director] = director_query;
+            }
+        
+            if (year_query != null) {
+                filter_options[year] = year_query;
+            }
+
+            // TODO: location queries to be handled differently
+
+            var match_filters = this.collection.where(filter_options);
+
+            //  console.log(match_filters);
+
+            if (match_filters.length > 0) {
+                allFilters.add(match_filters);
+                this.render(allFilters);
+            } else {
+                $('#user-message').text('No results found');
+                this.render(this.collection.models);
+            }
+        },
+        showAll: function() {
+            this.render(this.collection.models);
+        },
+        render: function(models) {
+            _.each(models, function(el) {
+                markersList[el.attributes.id].setVisible(true);
+            });
+        }
+    });
+
 
     // Create info window and marker for each scene in JSON array, add to collection
     // Populate arrays for autompletion/filtering
@@ -60,14 +129,16 @@ function initialize() {
 
                 // Google Maps marker
                 var marker = new google.maps.Marker({
-                    map: null,  // leave it to the MarkerView to hide/render the icon
+                    map: map,
                     position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
                     icon: 'static/js/star-3.png',
+                    visible: false,
                     zIndex: i
                 });
 
                 // my Backbone model marker
-                var newMarker = Marker.extend({
+                var newMarker = new Marker();
+                newMarker.set({
                     title: scene['title'],
                     id: i,  // Backbone marker id will match Maps marker zIndex
                     year: scene['release_year'],
@@ -85,97 +156,41 @@ function initialize() {
             }
         }
 
+        var markerView = new MarkerView({
+            collection: allMarkers
+        });
+
 
         /**
          * Populate arrays for autocompletion options (for 'filter by' fields)
          **/
 
-        var titles = _.pluck(allMarkers.models, 'title');
-        var directors = _.pluck(allMarkers.models, 'director');
-        var years = _.pluck(allMarkers.models, 'year');
-        // var locations = _.pluck(allMarkers, 'latlong');
+        var titles = _.uniq(allMarkers.pluck('title'), true);
+        var directors = _.uniq(allMarkers.pluck('director'), true);
+        var years = _.uniq(allMarkers.pluck('year'), true);
+        // var locations = _.uniq(allMarkers.pluck('latlong'), true);
+
 
         $("#by-title").typeahead({ 
             name: 'titles',
-            local: Object.keys(titles)
+            local: titles 
         });
 
         $("#by-director").typeahead({ 
             name: 'directors',
-            local: Object.keys(directors)
+            local: directors 
         });
 
         $("#by-year").typeahead({ 
             name: 'years',
-            local: Object.keys(years)
+            local: years 
         });
 
         // $("#by-location").typeahead({ 
         //     name: 'locations',
         //     remote:  
         // });
-    });
-    
-    console.log(allMarkers);
 
-    var MarkerView = Backbone.View.extend({
-        initialize: function() {
-            _.bindAll(this, 'showFilter', 'showAll', 'render');
-            this.showAll();
-        },
-        events: {
-            'click #go': 'showFilter',
-            'click #reset': 'showAll'
-        },
-        showFilter: function() {
-            var filter_options = {};
-
-            var title_query = $('#by-title').val();
-            var director_query = $('#by-director').val();
-            var year_query = $('#by-year').val();
-            // var location_query = $('#by-location').val();
-
-
-            if (title_query != null) {
-                filter_options[title] = title_query;
-            }
-
-            if (director_query != null) {
-                filter_options[director] = director_query;
-            }
-        
-            if (year_query != null) {
-                filter_options[year] = year_query;
-            }
-
-            // TODO: location queries to be handled differently
-
-            var match_filters = allMarkers.where(filter_options);
-
-            console.log(match_filters);
-
-            if (match_filters.length > 0) {
-                allFilters.add(match_filters);
-                this.render(allFilters);
-            } else {
-                $('#user-message').text('No results found');
-                this.render(this.collection);
-            }
-        },
-        showAll: function() {
-            this.render(this.collection);
-        },
-        render: function(collection) {
-            console.log(collection);
-            _.each(collection, function(el) {
-                console.log("call meeee");
-                markersList[el.id].setMap(map);
-            });
-        }
-    });
-
-    var markerView = new MarkerView({
-        collection: allMarkers
     });
 }
 
