@@ -47,7 +47,8 @@ function initialize() {
         showFilter: function() {
             var filter_options = {};
 
-            // capture user's filters and pass to filter_options (only if not empty)
+            // capture user's input and pass to filter_options (only if not empty)
+            // TODO: user should be able to tap 'enter' to select from dropdown menu
             var title_query = $('#by-title').val();
             var director_query = $('#by-director').val();
             var year_query = $('#by-year').val();
@@ -80,6 +81,8 @@ function initialize() {
         },
         render: function(models) {
             $('.filter').val('');
+            // TODO: typeahead suggestions reappear when clicking back inside the input fields
+
             for (var key in markersList) {
                 markersList[key].setVisible(false);  // clear map
             }
@@ -87,6 +90,7 @@ function initialize() {
                 markersList[el.attributes.id].setVisible(true);  // show markers 
             });
 
+            // TODO: Pan to capture all markers in filtered view
             return this;
         }
     });
@@ -95,9 +99,8 @@ function initialize() {
     /**
      * Fetch JSON array of objects. 
      *
-     * Instantiate a Marker model for each
-     * object, then instantiate a Google Maps infoWindow and marker class;
-     * add to master collection allMarkers
+     * Instantiate a Marker model for each object, as well as a Google Maps 
+     * infoWindow and marker class; add to master collection allMarkers
      *
      * Outside of the for loop, instantiate a Backbone.View. Then populate
      * an array for each autcompletion field (Title, Director, Year).
@@ -110,10 +113,10 @@ function initialize() {
 
         for (var i = 0; i < SCENES; i++) {
             var scene = data[i];
-            if (scene['latlong']) {  // (TODO: only jsonify valid locations before passing to client)
+            if (scene['latlong']) {
 
                 /**
-                 * Instantiate a Marker model for each scene, add to allMarkers collection
+                 * Instantiate a Marker model for each object, add to allMarkers collection
                  **/
 
                 // Google Maps marker

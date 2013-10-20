@@ -13,9 +13,7 @@ def geocode_locations(filename):
 
     json_file = open(filename)
     data = json.load(json_file)
-
-    # debugging
-    errors = 0
+    errors = 0  # for debugging
     address_string = ''
 
     for scene in data:
@@ -26,7 +24,7 @@ def geocode_locations(filename):
                 if u'\xe9' in scene['locations']:  # filter for most common unicode error
                     scene['locations'] = scene['locations'].replace(u'\xe9', 'e')
 
-                # to capture actual addresses (usually in parens = more accurate search string)
+                # to capture actual addresses (usually in parens) for more accurate querying 
                 if '(' in scene['locations']:
                     address_string = re.search('\((.*?)\)', scene['locations']).group(1)
                 else:
@@ -34,7 +32,8 @@ def geocode_locations(filename):
 
                 results = Geocoder.geocode(str(address_string), bounds=BOUNDS)
 
-                # check that resulting coordinates are within vicinity of SF
+                # check that first result's coordinates are within vicinity of SF;
+                # if not, loop # through the remaining results
                 if not 37.0 < results[0].coordinates[0] < 38.0 or not -123.0 < results[0].coordinates[1] < -122.0:
                     if len(results) > 1:
                         for i in range(1, len(results)):

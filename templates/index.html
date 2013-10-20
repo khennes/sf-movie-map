@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>SF Movie Map</title>
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
   {% endassets %}
 </head>
+
 <body>
   <div id="map-canvas">
   </div>
@@ -23,6 +25,7 @@
     <input class="button" id="reset" type="button" value="Reset" />
     <div id="user-message"></div>
   </div>
+
   <!-- to minify -->
   <script src="{{ url_for('static', filename='vendor/jquery-2.0.3.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/typeahead.min.js') }}"></script>
