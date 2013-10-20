@@ -8,12 +8,18 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
+    // create drawer function on navbox
+    $('#cue').on('click', function() {
+        $('#nav-box').toggleClass('active');
+    });
+
 
     /**
-     * Construct & initialize Backbone MVC variables
-     * Model: marker
-     * Collections: allMarkers, allFilters
-     * View: markerView
+     * Define and construct Backbone MVC variables
+     *
+     * 'Marker' extends Backbone.Model;
+     * 'Markers' extends Backbone.Collection; and
+     * 'MarkerView' extends Backbone.View
      **/
 
     var Marker = Backbone.Model.extend({});
@@ -21,14 +27,15 @@ function initialize() {
         model: Marker
     });     
 
-    var allMarkers = new Markers();
+    var allMarkers = new Markers();  // instantiate two collections
     var allFilters = new Markers();
 
-    var markersList = {};  // object to store Google Maps marker objects
+    var markersList = {};  // objects to store Google Maps marker objects
     var infoWindows = {};
 
+  
     var MarkerView = Backbone.View.extend({
-        el: $('body'),
+        el: document.body,
         events: {
             'click #go': 'showFilter',
             'click #reset': 'showAll'
@@ -40,11 +47,11 @@ function initialize() {
         showFilter: function() {
             var filter_options = {};
 
+            // capture user's filters and pass to filter_options (only if not empty)
             var title_query = $('#by-title').val();
             var director_query = $('#by-director').val();
             var year_query = $('#by-year').val();
             // TODO: location queries to be handled differently
-
 
             if (title_query != '') {
                 filter_options['title'] = title_query;
@@ -59,25 +66,25 @@ function initialize() {
             }
 
             var match_filters = this.collection.where(filter_options);
-            console.log(match_filters);
 
             if (match_filters.length > 0) {
-                allFilters.add(match_filters);
+                allFilters.reset(match_filters);
                 this.render(allFilters.models);
             } else {
                 $('#user-message').text('No results found');
-                this.render(this.collection.models);
+                this.render(this.collection.models);  // if no matches, render entire collection
             }
         },
         showAll: function() {
             this.render(this.collection.models);
         },
         render: function(models) {
+            $('.filter').val('');
             for (var key in markersList) {
                 markersList[key].setVisible(false);  // clear map
             }
             _.each(models, function(el) {
-                markersList[el.attributes.id].setVisible(true);
+                markersList[el.attributes.id].setVisible(true);  // show markers 
             });
 
             return this;
@@ -85,8 +92,19 @@ function initialize() {
     });
 
 
-    // Create info window and marker for each scene in JSON array, add to collection
-    // Populate arrays for autompletion/filtering
+    /**
+     * Fetch JSON array of objects. 
+     *
+     * Instantiate a Marker model for each
+     * object, then instantiate a Google Maps infoWindow and marker class;
+     * add to master collection allMarkers
+     *
+     * Outside of the for loop, instantiate a Backbone.View. Then populate
+     * an array for each autcompletion field (Title, Director, Year).
+     *
+     * Map icons courtesy of http://mapicons.nicolasmollet.com/
+     **/
+
     $.getJSON('static/js/geocoded.json', function(data) {
         var SCENES = data.length;
 
@@ -94,23 +112,21 @@ function initialize() {
             var scene = data[i];
             if (scene['latlong']) {  // (TODO: only jsonify valid locations before passing to client)
 
-                
                 /**
-                 * Create a marker for each scene, add Marker model to collection 
-                 * Star icons courtesy of http://mapicons.nicolasmollet.com/
+                 * Instantiate a Marker model for each scene, add to allMarkers collection
                  **/
 
                 // Google Maps marker
                 var marker = new google.maps.Marker({
                     map: map,
                     position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
-                    icon: 'static/js/star-3.png',
+                    icon: 'static/images/star-3.png',
                     title: scene['title'],
                     visible: false,
                     zIndex: i
                 });
 
-                // my Backbone model marker
+                // Backbone.Model marker
                 var newMarker = new Marker();
                 newMarker.set({
                     title: scene['title'],
@@ -125,7 +141,7 @@ function initialize() {
 
 
                 /**
-                 * Create infowindow, bind to marker
+                 * Instantiate a Google Maps infoWindow and bind to Maps marker
                  **/
 
                 var contentString = "<div class='content'>" +
@@ -134,12 +150,12 @@ function initialize() {
                     "<h1 id='firstHeading' class='firstHeading'>" + 
                     scene['title'] + " (" + scene['release_year'] + ")</h1>" +
                     "<div id='bodyContent'>" +
-                    "<p>Director: " + scene['director'] + "</p>" +
-                    "<p>Location: " + scene['locations'] + "</p>" +
+                    "<p><span class='em'>Director: </span>" + scene['director'] + "</p>" +
+                    "<p><span class='em'>Location: </span>" + scene['locations'] + "</p>" +
                     "</div>";
 
                 if (scene['fun_facts']) {
-                    var funFact = "<p>Fun fact: " + scene['fun_facts'] + "</p>";
+                    var funFact = "<p><span class='em'>Fun fact: </span>" + scene['fun_facts'] + "</p>";
                     contentString += funFact;
                 }
 
@@ -156,12 +172,13 @@ function initialize() {
                     return function() {
                         infoWindows[index].open(map, markersList[index]);
                         google.maps.event.addListener(map, 'click', function() {
-                            infoWindows[index].close();  // click away to close infowindow
+                            infoWindows[index].close();  // click away to close infoWindow
                         });
                     }
                 }(i));
             }
         }
+
 
         // instantiate Backbone view
         var markerView = new MarkerView({
@@ -174,9 +191,9 @@ function initialize() {
          **/
 
         var titles = _.uniq(allMarkers.pluck('title'), true);
-        var directors = _.uniq(allMarkers.pluck('director'), true);
-        var years = _.uniq(allMarkers.pluck('year'), true);
-        // var locations = _.uniq(allMarkers.pluck('latlong'), true);
+        var directors = _.uniq(allMarkers.pluck('director'), false);
+        var years = _.uniq(allMarkers.pluck('year'), false);
+        // var locations = _.uniq(allMarkers.pluck('latlong'), false);
 
 
         $("#by-title").typeahead({ 
