@@ -5,6 +5,7 @@ Jinja2==2.7.1
 MarkupSafe==0.18
 SQLAlchemy==0.8.2
 Werkzeug==0.9.4
+gunicorn==18.0
 itsdangerous==0.23
 pyScss==1.2.0.post3
 pygeocoder==1.2.1.1
