@@ -12,14 +12,16 @@
   <div id="map-canvas">
   </div>
   <div id="nav-box">
+    <img id="cue" src="static/images/star-2.png" alt="star" />
     <h2 class="header">sf movie map</h2>
-    <div>What are you looking for?</div> 
+    <h4>What are you looking for?</h4> 
     <input class="filter" id="by-title" type="text" placeholder="film title" />
     <input class="filter" id="by-director" type="text" placeholder="director" />
     <input class="filter" id="by-year" type="text" placeholder="year" />
-    <input class="filter" id="by-location" type="text" placeholder="address, landmark, or intersection" />
+    <!-- <input class="filter" id="by-location" type="text" placeholder="address, landmark, or intersection" /> -->
     <input class="button" id="go" type="button" value="Go" />
     <input class="button" id="reset" type="button" value="Reset" />
+    <div id="user-message"></div>
   </div>
   <!-- to minify -->
   <script src="{{ url_for('static', filename='vendor/jquery-2.0.3.min.js') }}"></script>
