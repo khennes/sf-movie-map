@@ -2,13 +2,15 @@ function initialize() {
     'use strict';
 
     // create map instance
+    var mapCenter = new google.maps.LatLng(37.775057, -122.419281);
+
     var map = new google.maps.Map(document.getElementById('map-canvas'), { 
-        center: new google.maps.LatLng(37.775057, -122.419281),
+        center: mapCenter,
         zoom: 13,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
-    // create drawer function on navbox
+    // create drawer effect on navbox
     $('#cue').on('click', function() {
         $('#nav-box').toggleClass('active');
     });
@@ -45,10 +47,13 @@ function initialize() {
             this.showAll();
         },
         showFilter: function() {
+            $('.filter').val('');  // clear input fields
+            $('input').typeahead('setQuery', '');
+            $('#nav-box').addClass('active');  // close drawer
+
             var filter_options = {};
 
             // capture user's input and pass to filter_options (only if not empty)
-            // TODO: user should be able to tap 'enter' to select from dropdown menu
             var title_query = $('#by-title').val();
             var director_query = $('#by-director').val();
             var year_query = $('#by-year').val();
@@ -77,12 +82,11 @@ function initialize() {
             }
         },
         showAll: function() {
+            map.setCenter(mapCenter);
+            map.setZoom(13);
             this.render(this.collection.models);
         },
         render: function(models) {
-            $('.filter').val('');
-            // TODO: typeahead suggestions reappear when clicking back inside the input fields
-
             for (var key in markersList) {
                 markersList[key].setVisible(false);  // clear map
             }
@@ -90,7 +94,6 @@ function initialize() {
                 markersList[el.attributes.id].setVisible(true);  // show markers 
             });
 
-            // TODO: Pan to capture all markers in filtered view
             return this;
         }
     });
@@ -169,16 +172,22 @@ function initialize() {
                 });
 
                 infoWindows[i] = infoWindow;
+                var previousWindow;
 
                 // bind infoWindow to its marker
                 google.maps.event.addListener(markersList[i], 'click', function(index) {
                     return function() {
+                        if (previousWindow) {
+                            previousWindow.close();  // auto-close any open infoWindow
+                        }
                         infoWindows[index].open(map, markersList[index]);
+                        previousWindow = infoWindows[index];
                         google.maps.event.addListener(map, 'click', function() {
                             infoWindows[index].close();  // click away to close infoWindow
                         });
                     }
                 }(i));
+
             }
         }
 
@@ -196,8 +205,6 @@ function initialize() {
         var titles = _.uniq(allMarkers.pluck('title'), true);
         var directors = _.uniq(allMarkers.pluck('director'), false);
         var years = _.uniq(allMarkers.pluck('year'), false);
-        // var locations = _.uniq(allMarkers.pluck('latlong'), false);
-
 
         $("#by-title").typeahead({ 
             name: 'titles',
@@ -215,7 +222,13 @@ function initialize() {
         });
 
         // TODO: Location filter
-
+        
+        $('.typeahead').live('keypress',function(e) {
+            var key = e.which;
+            if (key === 13) {
+                this.close();  // select from dropdown on pressing 'enter'
+            }
+        });
     });
 }
 
