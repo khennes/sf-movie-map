@@ -3,7 +3,6 @@ function initialize() {
 
     // create map instance
     var mapCenter = new google.maps.LatLng(37.775057, -122.419281);
-
     var map = new google.maps.Map(document.getElementById('map-canvas'), { 
         center: mapCenter,
         zoom: 13,
@@ -47,10 +46,6 @@ function initialize() {
             this.showAll();
         },
         showFilter: function() {
-            $('.filter').val('');  // clear input fields
-            $('input').typeahead('setQuery', '');
-            $('#nav-box').addClass('active');  // close drawer
-
             var filter_options = {};
 
             // capture user's input and pass to filter_options (only if not empty)
@@ -76,6 +71,7 @@ function initialize() {
             if (match_filters.length > 0) {
                 allFilters.reset(match_filters);
                 this.render(allFilters.models);
+                $('#nav-box').addClass('active');  // close drawer
             } else {
                 $('#user-message').text('No results found');
                 this.render(this.collection.models);  // if no matches, render entire collection
@@ -87,6 +83,9 @@ function initialize() {
             this.render(this.collection.models);
         },
         render: function(models) {
+            $('.filter').val('');  // clear input fields
+            $('input').typeahead('setQuery', '');
+
             for (var key in markersList) {
                 markersList[key].setVisible(false);  // clear map
             }
@@ -177,9 +176,7 @@ function initialize() {
                 // bind infoWindow to its marker
                 google.maps.event.addListener(markersList[i], 'click', function(index) {
                     return function() {
-                        if (previousWindow) {
-                            previousWindow.close();  // auto-close any open infoWindow
-                        }
+                        if (previousWindow) previousWindow.close();  // auto-close any open infoWindow
                         infoWindows[index].open(map, markersList[index]);
                         previousWindow = infoWindows[index];
                         google.maps.event.addListener(map, 'click', function() {
@@ -188,6 +185,9 @@ function initialize() {
                     }
                 }(i));
 
+                $('#nav-box').on('click', function() {
+                    if (previousWindow) previousWindow.close();
+                });
             }
         }
 
@@ -208,26 +208,24 @@ function initialize() {
 
         $("#by-title").typeahead({ 
             name: 'titles',
-            local: titles 
+            local: titles
         });
 
         $("#by-director").typeahead({ 
             name: 'directors',
-            local: directors 
+            local: directors.sort()
         });
 
         $("#by-year").typeahead({ 
             name: 'years',
-            local: years 
+            local: years.sort()
         });
 
         // TODO: Location filter
-        
-        $('.typeahead').live('keypress',function(e) {
+
+        $('.typeahead').on('keypress', function(e) {
             var key = e.which;
-            if (key === 13) {
-                this.close();  // select from dropdown on pressing 'enter'
-            }
+            if (key === 13) this.close();  // select from dropdown on pressing 'enter'
         });
     });
 }
