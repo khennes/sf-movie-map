@@ -1,4 +1,4 @@
-#### SF Movie Map 
+### SF Movie Map 
 
 To get started, I exported the available dataset from [SF Data](https://data.sfgov.org/Arts-Culture-and-Recreation-/Film-Locations-in-San-Francisco/yitu-d5am) to a JSON file, [data.json](https://github.com/khennes/sf-movie-map/blob/master/static/js/data.json), then ran it through a script, [geocode.py](https://github.com/khennes/sf-movie-map/blob/master/geocode.py), that geocoded each object's location string and added a new property for lat/long coordinates to it. The updated array, [geocoded.json](https://github.com/khennes/sf-movie-map/blob/master/static/js/geocoded.json), is loaded onto the client via a `$.getJSON` call. (I chose to use a JSON in/out API for simplicity's sake, but if I were expecting dynamic input from users, or if the dataset were going to grow much larger, I would have used a SQL database instead.)
 
