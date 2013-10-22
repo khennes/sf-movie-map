@@ -31,7 +31,7 @@ function initialize() {
     var allMarkers = new Markers();  // instantiate two collections
     var allFilters = new Markers();
 
-    var markersList = {};  // objects to store Google Maps marker objects
+    var mapMarkers = {};  // objects to store Google Maps marker objects
     var infoWindows = {};
 
   
@@ -86,11 +86,11 @@ function initialize() {
             $('.filter').val('');  // clear input fields
             $('input').typeahead('setQuery', '');
 
-            for (var key in markersList) {
-                markersList[key].setVisible(false);  // clear map
+            for (var key in mapMarkers) {
+                mapMarkers[key].setVisible(false);  // clear map
             }
             _.each(models, function(el) {
-                markersList[el.attributes.id].setVisible(true);  // show markers 
+                mapMarkers[el.attributes.id].setVisible(true);  // show markers 
             });
 
             return this;
@@ -99,10 +99,42 @@ function initialize() {
 
 
     /**
-     * Fetch JSON array of objects. 
-     *
-     * Instantiate a Marker model for each object, as well as a Google Maps 
-     * infoWindow and marker class; add to master collection allMarkers
+     * Populate arrays for autocompletion options (for 'filter by' fields)
+     **/
+
+    function loadAutocomplete(masterCollection) {
+
+        var titles = _.uniq(masterCollection.pluck('title'), true);
+        var directors = _.uniq(masterCollection.pluck('director'), false);
+        var years = _.uniq(masterCollection.pluck('year'), false);
+
+        $("#by-title").typeahead({ 
+            name: 'titles',
+            local: titles
+        });
+
+        $("#by-director").typeahead({ 
+            name: 'directors',
+            local: directors.sort()
+        });
+
+        $("#by-year").typeahead({ 
+            name: 'years',
+            local: years.sort()
+        });
+
+        // TODO: Location filter
+
+        $('.typeahead').on('keypress', function(e) {
+            var key = e.which;
+            if (key === 13) this.close();  // select from dropdown on pressing 'enter'
+        });
+    }
+
+    /**
+     * Loop through the array of JSON objects. Instantiate a Marker model 
+     * for each object, as well as a Google Maps infoWindow and marker class;
+     * add to master collection allMarkers
      *
      * Outside of the for loop, instantiate a Backbone.View. Then populate
      * an array for each autcompletion field (Title, Director, Year).
@@ -110,15 +142,17 @@ function initialize() {
      * Map icons courtesy of http://mapicons.nicolasmollet.com/
      **/
 
-    $.getJSON('static/js/geocoded.json', function(data) {
+    function setMarkers(data) {
         var SCENES = data.length;
 
         for (var i = 0; i < SCENES; i++) {
             var scene = data[i];
+
             if (scene['latlong']) {
 
                 /**
-                 * Instantiate a Marker model for each object, add to allMarkers collection
+                 * Instantiate a Google Maps Marker & Backbone Marker model 
+                 * for each object, add to allMarkers collection
                  **/
 
                 // Google Maps marker
@@ -141,7 +175,7 @@ function initialize() {
                     position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1])
                 });
 
-                markersList[i] = marker;
+                mapMarkers[i] = marker;
                 allMarkers.push(newMarker);
 
 
@@ -174,10 +208,10 @@ function initialize() {
                 var previousWindow;
 
                 // bind infoWindow to its marker
-                google.maps.event.addListener(markersList[i], 'click', function(index) {
+                google.maps.event.addListener(mapMarkers[i], 'click', function(index) {
                     return function() {
                         if (previousWindow) previousWindow.close();  // auto-close any open infoWindow
-                        infoWindows[index].open(map, markersList[index]);
+                        infoWindows[index].open(map, mapMarkers[index]);
                         previousWindow = infoWindows[index];
                         google.maps.event.addListener(map, 'click', function() {
                             infoWindows[index].close();  // click away to close infoWindow
@@ -188,45 +222,20 @@ function initialize() {
                 $('#nav-box').on('click', function() {
                     if (previousWindow) previousWindow.close();
                 });
-            }
+            } 
         }
-
 
         // instantiate Backbone view
         var markerView = new MarkerView({
             collection: allMarkers
         });
 
+        loadAutocomplete(allMarkers);
+    }
 
-        /**
-         * Populate arrays for autocompletion options (for 'filter by' fields)
-         **/
-
-        var titles = _.uniq(allMarkers.pluck('title'), true);
-        var directors = _.uniq(allMarkers.pluck('director'), false);
-        var years = _.uniq(allMarkers.pluck('year'), false);
-
-        $("#by-title").typeahead({ 
-            name: 'titles',
-            local: titles
-        });
-
-        $("#by-director").typeahead({ 
-            name: 'directors',
-            local: directors.sort()
-        });
-
-        $("#by-year").typeahead({ 
-            name: 'years',
-            local: years.sort()
-        });
-
-        // TODO: Location filter
-
-        $('.typeahead').on('keypress', function(e) {
-            var key = e.which;
-            if (key === 13) this.close();  // select from dropdown on pressing 'enter'
-        });
+    // retrieve JSON data from server
+    $.getJSON('static/js/geocoded.json', function(data) {
+        setMarkers(data);
     });
 }
 
