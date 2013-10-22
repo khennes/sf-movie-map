@@ -148,82 +148,79 @@ function initialize() {
         for (var i = 0; i < SCENES; i++) {
             var scene = data[i];
 
-            if (scene['latlong']) {
+            /**
+             * Instantiate a Google Maps Marker & Backbone Marker model 
+             * for each object, add to allMarkers collection
+             **/
 
-                /**
-                 * Instantiate a Google Maps Marker & Backbone Marker model 
-                 * for each object, add to allMarkers collection
-                 **/
+            // Google Maps marker
+            var marker = new google.maps.Marker({
+                map: map,
+                position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
+                icon: 'static/images/star-3.png',
+                title: scene['title'],
+                visible: false,
+                zIndex: i
+            });
 
-                // Google Maps marker
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
-                    icon: 'static/images/star-3.png',
-                    title: scene['title'],
-                    visible: false,
-                    zIndex: i
-                });
+            // Backbone.Model marker
+            var newMarker = new Marker();
+            newMarker.set({
+                title: scene['title'],
+                id: i,  // Backbone marker id will match Maps marker zIndex
+                year: scene['release_year'],
+                director: scene['director'],
+                position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1])
+            });
 
-                // Backbone.Model marker
-                var newMarker = new Marker();
-                newMarker.set({
-                    title: scene['title'],
-                    id: i,  // Backbone marker id will match Maps marker zIndex
-                    year: scene['release_year'],
-                    director: scene['director'],
-                    position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1])
-                });
-
-                mapMarkers[i] = marker;
-                allMarkers.push(newMarker);
+            mapMarkers[i] = marker;
+            allMarkers.push(newMarker);
 
 
-                /**
-                 * Instantiate a Google Maps infoWindow and bind to Maps marker
-                 **/
+            /**
+             * Instantiate a Google Maps infoWindow and bind to Maps marker
+             **/
 
-                var contentString = "<div class='content'>" +
-                    "<div id='siteNotice'>" +
-                    "</div>" +
-                    "<h1 id='firstHeading' class='firstHeading'>" + 
-                    scene['title'] + " (" + scene['release_year'] + ")</h1>" +
-                    "<div id='bodyContent'>" +
-                    "<p><span class='em'>Director: </span>" + scene['director'] + "</p>" +
-                    "<p><span class='em'>Location: </span>" + scene['locations'] + "</p>" +
-                    "</div>";
+            var contentString = "<div class='content'>" +
+                "<div id='siteNotice'>" +
+                "</div>" +
+                "<h1 id='firstHeading' class='firstHeading'>" + 
+                scene['title'] + " (" + scene['release_year'] + ")</h1>" +
+                "<div id='bodyContent'>" +
+                "<p><span class='em'>Director: </span>" + scene['director'] + "</p>" +
+                "<p><span class='em'>Location: </span>" + scene['locations'] + "</p>" +
+                "</div>";
 
-                if (scene['fun_facts']) {
-                    var funFact = "<p><span class='em'>Fun fact: </span>" + scene['fun_facts'] + "</p>";
-                    contentString += funFact;
+            if (scene['fun_facts']) {
+                var funFact = "<p><span class='em'>Fun fact: </span>" + scene['fun_facts'] + "</p>";
+                contentString += funFact;
+            }
+
+            contentString += "</div>";
+
+            var infoWindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            infoWindows[i] = infoWindow;
+            var previousWindow;
+
+            // bind infoWindow to its marker
+            google.maps.event.addListener(mapMarkers[i], 'click', function(index) {
+                return function() {
+                    if (previousWindow) previousWindow.close();  // auto-close any open infoWindow
+                    infoWindows[index].open(map, mapMarkers[index]);
+                    previousWindow = infoWindows[index];
+                    google.maps.event.addListener(map, 'click', function() {
+                        infoWindows[index].close();  // click away to close infoWindow
+                    });
                 }
+            }(i));
 
-                contentString += "</div>";
-
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-
-                infoWindows[i] = infoWindow;
-                var previousWindow;
-
-                // bind infoWindow to its marker
-                google.maps.event.addListener(mapMarkers[i], 'click', function(index) {
-                    return function() {
-                        if (previousWindow) previousWindow.close();  // auto-close any open infoWindow
-                        infoWindows[index].open(map, mapMarkers[index]);
-                        previousWindow = infoWindows[index];
-                        google.maps.event.addListener(map, 'click', function() {
-                            infoWindows[index].close();  // click away to close infoWindow
-                        });
-                    }
-                }(i));
-
-                $('#nav-box').on('click', function() {
-                    if (previousWindow) previousWindow.close();
-                });
-            } 
-        }
+            $('#nav-box').on('click', function() {
+                if (previousWindow) previousWindow.close();
+            });
+        } 
 
         // instantiate Backbone view
         var markerView = new MarkerView({
