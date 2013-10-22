@@ -14,7 +14,6 @@ function initialize() {
         $('#nav-box').toggleClass('active');
     });
 
-
     /**
      * Define and construct Backbone MVC variables
      *
@@ -28,13 +27,10 @@ function initialize() {
         model: Marker
     });     
 
-    var allMarkers = new Markers();  // instantiate two collections
+    // instantiate two collections
+    var allMarkers = new Markers();
     var allFilters = new Markers();
 
-    var mapMarkers = {};  // objects to store Google Maps marker objects
-    var infoWindows = {};
-
-  
     var MarkerView = Backbone.View.extend({
         el: document.body,
         events: {
@@ -89,7 +85,6 @@ function initialize() {
             _.each(allMarkers.models, function(el) {
                 el.attributes.mapMarker.setVisible(false);  // clear map
             });
-                
             _.each(models, function(el) {
                 el.attributes.mapMarker.setVisible(true);  // show markers 
             });
@@ -166,47 +161,35 @@ function initialize() {
                     title: scene['title'],
                     visible: false,
                     zIndex: i
+                }),
+                infoWindow: new google.maps.InfoWindow({
+                    content: "<div class='content'>" +
+                            "<div id='siteNotice'>" + "</div>" +
+                            "<h1 id='firstHeading' class='firstHeading'>" + 
+                            scene['title'] + " (" + scene['release_year'] + ")</h1>" +
+                            "<div id='bodyContent'>" +
+                            "<p><span class='em'>Director: </span>" + scene['director'] + "</p>" +
+                            "<p><span class='em'>Location: </span>" + scene['locations'] + "</p>" +
+                            "</div>" + "</div>",
+                    pixelOffset: new google.maps.Size(0,15)
                 })
             });
 
             allMarkers.push(newMarker);
             
-            /**
-             * Create a Google Maps infoWindow and bind to Maps marker
-             **/
-
-            var contentString = "<div class='content'>" +
-                "<div id='siteNotice'>" +
-                "</div>" +
-                "<h1 id='firstHeading' class='firstHeading'>" + 
-                scene['title'] + " (" + scene['release_year'] + ")</h1>" +
-                "<div id='bodyContent'>" +
-                "<p><span class='em'>Director: </span>" + scene['director'] + "</p>" +
-                "<p><span class='em'>Location: </span>" + scene['locations'] + "</p>" +
-                "</div>";
-
-            if (scene['fun_facts']) {
-                var funFact = "<p><span class='em'>Fun fact: </span>" + scene['fun_facts'] + "</p>";
-                contentString += funFact;
-            }
-
-            contentString += "</div>";
-
-            var infoWindow = new google.maps.InfoWindow({
-                content: contentString
-            });
-
-            infoWindows[i] = infoWindow;  // push to infoWindows object
             var previousWindow;
 
             // bind infoWindow to its marker
             google.maps.event.addListener(allMarkers.get(i).attributes.mapMarker, 'click', function(index) {
                 return function() {
                     if (previousWindow) previousWindow.close();  // auto-close any open infoWindow
-                    infoWindows[index].open(map, allMarkers.get(index).attributes.mapMarker);
-                    previousWindow = infoWindows[index];
+
+                    var thisMarker = allMarkers.get(index).attributes;
+                    thisMarker.infoWindow.open(map, thisMarker.mapMarker);
+                    previousWindow = thisMarker.infoWindow;
+
                     google.maps.event.addListener(map, 'click', function() {
-                        infoWindows[index].close();  // click away to close infoWindow
+                        thisMarker.infoWindow.close();  // click away to close infoWindow
                     });
                 }
             }(i));
