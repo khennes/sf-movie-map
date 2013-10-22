@@ -86,11 +86,12 @@ function initialize() {
             $('.filter').val('');  // clear input fields
             $('input').typeahead('setQuery', '');
 
-            for (var key in mapMarkers) {
-                mapMarkers[key].setVisible(false);  // clear map
-            }
+            _.each(allMarkers.models, function(el) {
+                el.attributes.mapMarker.setVisible(false);  // clear map
+            });
+                
             _.each(models, function(el) {
-                mapMarkers[el.attributes.id].setVisible(true);  // show markers 
+                el.attributes.mapMarker.setVisible(true);  // show markers 
             });
 
             return this;
@@ -149,36 +150,29 @@ function initialize() {
             var scene = data[i];
 
             /**
-             * Instantiate a Google Maps Marker & Backbone Marker model 
-             * for each object, add to allMarkers collection
+             * Instantiate a Backbone model for each object, add to allMarkers collection
              **/
 
-            // Google Maps marker
-            var marker = new google.maps.Marker({
-                map: map,
-                position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
-                icon: 'static/images/star-3.png',
-                title: scene['title'],
-                visible: false,
-                zIndex: i
-            });
-
             // Backbone.Model marker
-            var newMarker = new Marker();
-            newMarker.set({
+            var newMarker = new Marker({
                 title: scene['title'],
-                id: i,  // Backbone marker id will match Maps marker zIndex
+                id: i,
                 year: scene['release_year'],
                 director: scene['director'],
-                position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1])
+                mapMarker: new google.maps.Marker({
+                    map: map,
+                    position: new google.maps.LatLng(scene['latlong'][0], scene['latlong'][1]),
+                    icon: 'static/images/star-3.png',
+                    title: scene['title'],
+                    visible: false,
+                    zIndex: i
+                })
             });
 
-            mapMarkers[i] = marker;
             allMarkers.push(newMarker);
-
-
+            
             /**
-             * Instantiate a Google Maps infoWindow and bind to Maps marker
+             * Create a Google Maps infoWindow and bind to Maps marker
              **/
 
             var contentString = "<div class='content'>" +
@@ -202,14 +196,14 @@ function initialize() {
                 content: contentString
             });
 
-            infoWindows[i] = infoWindow;
+            infoWindows[i] = infoWindow;  // push to infoWindows object
             var previousWindow;
 
             // bind infoWindow to its marker
-            google.maps.event.addListener(mapMarkers[i], 'click', function(index) {
+            google.maps.event.addListener(allMarkers.get(i).attributes.mapMarker, 'click', function(index) {
                 return function() {
                     if (previousWindow) previousWindow.close();  // auto-close any open infoWindow
-                    infoWindows[index].open(map, mapMarkers[index]);
+                    infoWindows[index].open(map, allMarkers.get(index).attributes.mapMarker);
                     previousWindow = infoWindows[index];
                     google.maps.event.addListener(map, 'click', function() {
                         infoWindows[index].close();  // click away to close infoWindow
