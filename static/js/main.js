@@ -9,11 +9,6 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
-    // create drawer effect on navbox
-    $('#cue').on('click', function() {
-        $('#nav-box').toggleClass('active');
-    });
-
     /**
      * Define and construct Backbone MVC variables
      *
@@ -81,6 +76,11 @@ function initialize() {
         render: function(models) {
             $('.filter').val('');  // clear input fields
             $('input').typeahead('setQuery', '');
+
+            // create drawer effect on navbox
+            $('#cue').on('click', function() {
+                $('#nav-box').toggleClass('active');
+            });
 
             _.each(allMarkers.models, function(el) {
                 el.attributes.mapMarker.setVisible(false);  // clear map
