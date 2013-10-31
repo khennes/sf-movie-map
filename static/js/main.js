@@ -35,6 +35,12 @@ function initialize() {
         initialize: function() {
             _.bindAll(this, 'showFilter', 'showAll', 'render');
             this.showAll();
+
+            // create drawer effect on navbox
+            $('#cue').on('click', function() {
+                $('#nav-box').toggleClass('active');
+            });
+
         },
         showFilter: function() {
             var filter_options = {};
@@ -45,16 +51,16 @@ function initialize() {
             var year_query = $('#by-year').val();
             // TODO: location queries to be handled differently
 
-            if (title_query != '') {
-                filter_options['title'] = title_query;
+            if (title_query !== '') {
+                filter_options.title = title_query;
             }
 
-            if (director_query != '') {
-                filter_options['director'] = director_query;
+            if (director_query !== '') {
+                filter_options.director = director_query;
             }
         
-            if (year_query != '') {
-                filter_options['year'] = year_query;
+            if (year_query !== '') {
+                filter_options.year = year_query;
             }
 
             var match_filters = this.collection.where(filter_options);
@@ -76,11 +82,6 @@ function initialize() {
         render: function(models) {
             $('.filter').val('');  // clear input fields
             $('input').typeahead('setQuery', '');
-
-            // create drawer effect on navbox
-            $('#cue').on('click', function() {
-                $('#nav-box').toggleClass('active');
-            });
 
             _.each(allMarkers.models, function(el) {
                 el.attributes.mapMarker.setVisible(false);  // clear map
